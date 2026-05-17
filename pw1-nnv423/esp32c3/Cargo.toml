@@ -1,0 +1,45 @@
+[package]
+name = "esp32c3_lib"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+critical-section = "1.1.2"
+cfg-if = "1.0.0"
+
+# target dependency
+esp-hal-smartled = { version = "0.9.0", features=["esp32c3"] }
+esp-hal = { version = "0.16.1", features = ["esp32c3", "direct-vectoring", "interrupt-preemption"] }
+esp32c3 = { version = "0.22.0", features = ["critical-section"] }
+# tracing and panic handling
+rtt-target = "0.5.0"
+panic-rtt-target = "0.1.2"
+
+# rtic framework
+rtic = { git = "https://github.com/rtic-rs/rtic", rev = "056616c", features = [
+    "riscv-esp32c3-backend",
+] }
+# This should be temporary. As soon as the pull request is closed, we should use the monotonics
+# version from the RTIC upstream.
+rtic-monotonics = { git = "https://github.com/onsdagens/rtic", branch = "monotonic-2024", features = [
+    "esp32c3-systimer",
+] }
+rtic-sync = { git = 'https://github.com/rtic-rs/rtic' }
+
+# external libraries used
+ssmarshal = { version = "1.0.0", default-features = false }
+corncobs = "0.1.3"
+crc = "3.0.1"
+
+# application dependency
+shared = { path = "../shared" }
+smart-leds = "0.4.0"
+
+[profile.release]
+incremental = false
+codegen-units = 1   # better optimizations
+debug = true        # symbols are nice and they don't increase the size on Flash
+opt-level = 3
